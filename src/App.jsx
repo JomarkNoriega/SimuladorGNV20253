@@ -287,7 +287,6 @@ const VEHICLE_BRAND_GROUP = {
   "MINI": "Grupo 1",
   "MUDAN": "Grupo 2",
   "OPEL": "Grupo 1",
-  "OTROS": "Grupo 1",
   "PORSCHE": "Grupo 1",
   "RAM": "Grupo 1",
   "SAIC WULING": "Grupo 2",
@@ -308,21 +307,206 @@ const VEHICLE_BRANDS = Object.keys(VEHICLE_BRAND_GROUP).sort((a, b) =>
 );
 
 function vehicleSegmentFromRules(segmentoCliente, marca, antiguedad) {
-  const grupoMarca = VEHICLE_BRAND_GROUP[marca] ?? "Grupo 1";
-  const usaGrupoMarca =
-    ["VIP", "PREFERENTE", "NORMAL"].includes(segmentoCliente) &&
-    antiguedad >= 0 && antiguedad <= 10;
-  return usaGrupoMarca ? grupoMarca : "TODOS";
+  const grupoMarca = VEHICLE_BRAND_GROUP[marca];
+
+  if (!grupoMarca) return "—";
+
+  if (
+    ["VIP", "PREFERENTE"].includes(segmentoCliente) &&
+    antiguedad >= 0 &&
+    antiguedad <= 20
+  ) {
+    return grupoMarca;
+  }
+
+  if (
+    segmentoCliente === "NORMAL" &&
+    antiguedad >= 0 &&
+    antiguedad <= 10
+  ) {
+    return grupoMarca;
+  }
+
+  return "TODOS";
 }
 
-function vehicleEligibility(segmentoCliente, antiguedad) {
-  if (!Number.isFinite(antiguedad) || antiguedad < 0)
-    return { valido: false, mensaje: "Ingrese un año de modelo válido." };
-  if (antiguedad > 20)
-    return { valido: false, mensaje: "Oferta no corresponde al segmento, volver a calcular" };
-  if (["VIP", "PREFERENTE"].includes(segmentoCliente) && antiguedad > 10)
-    return { valido: false, mensaje: "Oferta no corresponde al segmento, volver a calcular" };
-  return { valido: true, mensaje: "" };
+const OFFER_RULES = [
+  {
+    segmentos: ["VIP", "PREFERENTE"],
+    edadMin: 0,
+    edadMax: 13,
+    grupo: "Grupo 1",
+    montoMin: 1000,
+    montoMax: 5500,
+  },
+  {
+    segmentos: ["VIP", "PREFERENTE"],
+    edadMin: 0,
+    edadMax: 13,
+    grupo: "Grupo 2",
+    montoMin: 1000,
+    montoMax: 5000,
+  },
+  {
+    segmentos: ["VIP", "PREFERENTE"],
+    edadMin: 14,
+    edadMax: 20,
+    grupo: "Grupo 1",
+    montoMin: 1000,
+    montoMax: 4500,
+  },
+  {
+    segmentos: ["VIP", "PREFERENTE"],
+    edadMin: 14,
+    edadMax: 20,
+    grupo: "Grupo 2",
+    montoMin: 1000,
+    montoMax: 3500,
+  },
+  {
+    segmentos: ["NORMAL"],
+    edadMin: 0,
+    edadMax: 10,
+    grupo: "Grupo 1",
+    montoMin: 1000,
+    montoMax: 4000,
+  },
+  {
+    segmentos: ["NORMAL"],
+    edadMin: 0,
+    edadMax: 10,
+    grupo: "Grupo 2",
+    montoMin: 1000,
+    montoMax: 3500,
+  },
+  {
+    segmentos: ["NORMAL"],
+    edadMin: 11,
+    edadMax: 20,
+    grupo: "TODOS",
+    montoMin: 1000,
+    montoMax: 2500,
+  },
+  {
+    segmentos: ["INCLUSION"],
+    edadMin: 0,
+    edadMax: 20,
+    grupo: "TODOS",
+    montoMin: 1000,
+    montoMax: 2000,
+  },
+  {
+    segmentos: ["EVALUACION"],
+    edadMin: 0,
+    edadMax: 20,
+    grupo: "TODOS",
+    montoMin: 1000,
+    montoMax: 1500,
+  },
+  {
+    segmentos: ["NA"],
+    edadMin: 0,
+    edadMax: 20,
+    grupo: "TODOS",
+    montoMin: 500,
+    montoMax: 500,
+  },
+];
+
+function formatNumber(value) {
+  return new Intl.NumberFormat("es-PE", {
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
+function getOfferRule(segmentoCliente, segmentoVehiculo, antiguedad) {
+  return OFFER_RULES.find(
+    (rule) =>
+      rule.segmentos.includes(segmentoCliente) &&
+      antiguedad >= rule.edadMin &&
+      antiguedad <= rule.edadMax &&
+      rule.grupo === segmentoVehiculo
+  );
+}
+
+function buildRule2Message(segmentoCliente, segmentoVehiculo, antiguedad, rule) {
+  if (!rule) {
+    return "Oferta no corresponde al segmento, volver a calcular.";
+  }
+
+  const rangoEdad =
+    rule.edadMin === 0
+      ? `hasta ${rule.edadMax} años`
+      : `mayor de ${rule.edadMin - 1} y hasta ${rule.edadMax} años`;
+
+  const rangoMonto =
+    rule.montoMin === rule.montoMax
+      ? `S/ ${formatNumber(rule.montoMin)}`
+      : `entre S/ ${formatNumber(rule.montoMin)} y S/ ${formatNumber(
+          rule.montoMax
+        )}`;
+
+  return `Para el segmento cliente ${segmentoCliente}, vehículo ${segmentoVehiculo} y antigüedad ${rangoEdad}, la oferta debe ser de ${rangoMonto}.`;
+}
+
+function validateOffer(
+  segmentoCliente,
+  segmentoVehiculo,
+  antiguedad,
+  montoSolicitado,
+  marcaValida
+) {
+  if (!marcaValida) {
+    return {
+      valido: false,
+      mensaje: "Seleccione una marca válida del catálogo.",
+      regla: null,
+    };
+  }
+
+  if (!Number.isFinite(antiguedad) || antiguedad < 0 || antiguedad > 20) {
+    return {
+      valido: false,
+      mensaje: "Oferta no corresponde al segmento, volver a calcular.",
+      regla: null,
+    };
+  }
+
+  const regla = getOfferRule(
+    segmentoCliente,
+    segmentoVehiculo,
+    antiguedad
+  );
+
+  if (!regla) {
+    return {
+      valido: false,
+      mensaje: "Oferta no corresponde al segmento, volver a calcular.",
+      regla: null,
+    };
+  }
+
+  const corresponde =
+    montoSolicitado >= regla.montoMin &&
+    montoSolicitado <= regla.montoMax;
+
+  return {
+    valido: corresponde,
+    mensaje: corresponde
+      ? buildRule2Message(
+          segmentoCliente,
+          segmentoVehiculo,
+          antiguedad,
+          regla
+        )
+      : `Oferta no corresponde al segmento, volver a calcular. ${buildRule2Message(
+          segmentoCliente,
+          segmentoVehiculo,
+          antiguedad,
+          regla
+        )}`,
+    regla,
+  };
 }
 
 export default function App() {
@@ -337,9 +521,21 @@ export default function App() {
 
   const calc = useMemo(() => {
     const antiguedad = Math.max(0, currentYear - anioModelo);
-    const segmentoVehiculo = vehicleSegmentFromRules(segmento, marcaVehiculo, antiguedad);
-    const elegibilidadVehiculo = vehicleEligibility(segmento, antiguedad);
-    const costoObliga = seguroObliga === "Vida Integral" ? solicitado * 0.1 : 0;
+    const marcaValida = Boolean(VEHICLE_BRAND_GROUP[marcaVehiculo]);
+    const segmentoVehiculo = vehicleSegmentFromRules(
+      segmento,
+      marcaVehiculo,
+      antiguedad
+    );
+    const validacionOferta = validateOffer(
+      segmento,
+      segmentoVehiculo,
+      antiguedad,
+      solicitado,
+      marcaValida
+    );
+    const costoObliga =
+      seguroObliga === "Vida Integral" ? solicitado * 0.1 : 0;
     let costoVol = 0;
     if (seguroVol === "Solidario") costoVol = plazo * 8;
     else if (seguroVol === "Ruta") costoVol = 60;
@@ -351,7 +547,15 @@ export default function App() {
     const factor = factorFromCuota(segmento, cuota);
     const rule = SEGMENT_RULES[segmento];
     const alertaFactor = typeof factor === "string";
-    return { antiguedad, segmentoVehiculo, cuota, factor, alertaFactor, limiteFactor: rule.maxLabel, elegibilidadVehiculo };
+    return {
+      antiguedad,
+      segmentoVehiculo,
+      cuota,
+      factor,
+      alertaFactor,
+      limiteFactor: rule.maxLabel,
+      validacionOferta,
+    };
   }, [segmento, marcaVehiculo, anioModelo, plazo, solicitado, seguroObliga, seguroVol, currentYear]);
 
   const inputStyle = { width: "100%", padding: 9, marginTop: 6 };
@@ -378,14 +582,9 @@ export default function App() {
               placeholder="Escriba parte de la marca..."
               autoComplete="off"
               onChange={(e) => setMarcaVehiculo(e.target.value.toUpperCase())}
-              onBlur={() => {
-                const marcaNormalizada = marcaVehiculo.trim().toUpperCase();
-                setMarcaVehiculo(
-                  VEHICLE_BRAND_GROUP[marcaNormalizada]
-                    ? marcaNormalizada
-                    : "OTROS"
-                );
-              }}
+              onBlur={() =>
+                setMarcaVehiculo(marcaVehiculo.trim().toUpperCase())
+              }
               style={inputStyle}
             />
             <datalist id="vehicle-brand-catalog">
@@ -394,7 +593,7 @@ export default function App() {
               ))}
             </datalist>
             <div style={{ fontSize: 12, color: "#555", marginTop: 4 }}>
-              Puede escribir para buscar. Si la marca no está en el catálogo, se asignará OTROS.
+              Escriba para buscar y seleccione una marca válida del catálogo.
             </div>
           </label>
           <label style={labelStyle}>Año de modelo
@@ -435,9 +634,21 @@ export default function App() {
           {calc.alertaFactor && <div style={{ marginTop: 16, padding: 12, borderRadius: 10, border: "1px solid #cc0000", color: "#cc0000", fontWeight: 600 }}>
             Alerta: el factor supera el límite permitido de {calc.limiteFactor} para el segmento {segmento}.
           </div>}
-          {!calc.elegibilidadVehiculo.valido && <div style={{ marginTop: 16, padding: 12, borderRadius: 10, border: "1px solid #cc0000", color: "#cc0000", fontWeight: 600 }}>
-            {calc.elegibilidadVehiculo.mensaje}
-          </div>}
+          <div
+            style={{
+              marginTop: 16,
+              padding: 12,
+              borderRadius: 10,
+              border: calc.validacionOferta.valido
+                ? "1px solid #2e7d32"
+                : "1px solid #cc0000",
+              color: calc.validacionOferta.valido ? "#2e7d32" : "#cc0000",
+              background: calc.validacionOferta.valido ? "#f3fbf4" : "#fff5f5",
+              fontWeight: 600,
+            }}
+          >
+            {calc.validacionOferta.mensaje}
+          </div>
         </div>
       </div>
 
