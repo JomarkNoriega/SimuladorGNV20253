@@ -332,19 +332,19 @@ function vehicleSegmentFromRules(segmentoCliente, marca, antiguedad) {
 
 
 const OFFER_RULES = [
-  { segmentos: ["VIP", "PREFERENTE"], edadMin: 0, edadMax: 13, grupos: ["Grupo 1"], montoMin: 1000, montoMax: 5500, plazoMax: 30 },
-  { segmentos: ["VIP", "PREFERENTE"], edadMin: 0, edadMax: 13, grupos: ["Grupo 2"], montoMin: 1000, montoMax: 5000, plazoMax: 30 },
-  { segmentos: ["VIP", "PREFERENTE"], edadMin: 14, edadMax: 20, grupos: ["Grupo 1"], montoMin: 1000, montoMax: 4500, plazoMax: 30 },
-  { segmentos: ["VIP", "PREFERENTE"], edadMin: 14, edadMax: 20, grupos: ["Grupo 2"], montoMin: 1000, montoMax: 3500, plazoMax: 30 },
-  { segmentos: ["NORMAL"], edadMin: 0, edadMax: 10, grupos: ["Grupo 1"], montoMin: 1000, montoMax: 4000, plazoMax: 30 },
-  { segmentos: ["NORMAL"], edadMin: 0, edadMax: 10, grupos: ["Grupo 2"], montoMin: 1000, montoMax: 3500, plazoMax: 30 },
-  { segmentos: ["NORMAL"], edadMin: 11, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 2500, plazoMax: 24 },
-  { segmentos: ["INCLUSION"], edadMin: 0, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 2000, plazoMax: 24 },
-  { segmentos: ["EVALUACION"], edadMin: 0, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 1500, plazoMax: 24 },
-  { segmentos: ["NA"], edadMin: 0, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 500, montoMax: 500, plazoMax: 6 },
+  { segmentos: ["VIP", "PREFERENTE"], edadMin: 0, edadMax: 13, grupos: ["Grupo 1"], montoMin: 1000, montoMax: 5500, plazoMax: 30, factorMax: 0.80 },
+  { segmentos: ["VIP", "PREFERENTE"], edadMin: 0, edadMax: 13, grupos: ["Grupo 2"], montoMin: 1000, montoMax: 5000, plazoMax: 30, factorMax: 0.75 },
+  { segmentos: ["VIP", "PREFERENTE"], edadMin: 14, edadMax: 20, grupos: ["Grupo 1"], montoMin: 1000, montoMax: 4500, plazoMax: 30, factorMax: 0.65 },
+  { segmentos: ["VIP", "PREFERENTE"], edadMin: 14, edadMax: 20, grupos: ["Grupo 2"], montoMin: 1000, montoMax: 3500, plazoMax: 30, factorMax: 0.55 },
+  { segmentos: ["NORMAL"], edadMin: 0, edadMax: 10, grupos: ["Grupo 1"], montoMin: 1000, montoMax: 4000, plazoMax: 30, factorMax: 0.60 },
+  { segmentos: ["NORMAL"], edadMin: 0, edadMax: 10, grupos: ["Grupo 2"], montoMin: 1000, montoMax: 3500, plazoMax: 30, factorMax: 0.55 },
+  { segmentos: ["NORMAL"], edadMin: 11, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 2500, plazoMax: 24, factorMax: 0.50 },
+  { segmentos: ["INCLUSION"], edadMin: 0, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 2000, plazoMax: 24, factorMax: 0.50 },
+  { segmentos: ["EVALUACION"], edadMin: 0, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 1500, plazoMax: 24, factorMax: 0.50 },
+  { segmentos: ["NA"], edadMin: 0, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 500, montoMax: 500, plazoMax: 6, factorMax: 0.50 },
 ];
 
-const APP_VERSION = "2026.07.31.v3";
+const APP_VERSION = "2026.07.31.v4";
 
 const DNI_WEIGHTS = [3, 2, 7, 6, 5, 4, 3, 2];
 const DNI_NUMBER_MAP = "67890123456";
@@ -458,7 +458,7 @@ export default function App() {
   const [montoSolicitado, setMontoSolicitado] = useState(1000);
   const [plazo, setPlazo] = useState(12);
   const [factorRecaudo, setFactorRecaudo] = useState(85);
-  const [seguroObliga, setSeguroObliga] = useState("Vida Integral");
+  const [seguroObliga, setSeguroObliga] = useState("Vida Integral/Desgravamen");
   const [seguroVol, setSeguroVol] = useState("Solidario");
 
   const [resultado, setResultado] = useState(null);
@@ -558,14 +558,14 @@ export default function App() {
         return;
       }
 
-      const factorMax = factorLimitForSegment(segmento);
+      const factorMax = rule.factorMax;
 
       const offer = {
         montoMin: rule.montoMin,
         montoMax: rule.montoMax,
         plazoMax: rule.plazoMax,
-        factorMax: factorMax.maxFactor,
-        factorMaxLabel: factorMax.maxLabel,
+        factorMax,
+        factorMaxLabel: `${Math.round(factorMax * 100)}%`,
         antiguedad,
         grupoMarca,
       };
@@ -575,7 +575,7 @@ export default function App() {
         Math.min(Math.max(montoSolicitado, rule.montoMin), rule.montoMax)
       );
       setPlazo(Math.min(Math.max(plazo, 1), rule.plazoMax));
-      setFactorRecaudo(Math.round(factorMax.maxFactor * 100));
+      setFactorRecaudo(Math.round(factorMax * 100));
       showMessage("success", "Oferta consultada correctamente.");
     } catch (error) {
       showMessage("error", error.message);
@@ -629,7 +629,7 @@ export default function App() {
     setMensaje(null);
 
     const costoObliga =
-      seguroObliga === "Vida Integral" ? montoSolicitado * 0.1 : 0;
+      seguroObliga === "Vida Integral/Desgravamen" ? montoSolicitado * 0.1 : 0;
 
     let costoVol = 0;
     if (seguroVol === "Solidario") costoVol = plazo * 8;
@@ -689,7 +689,7 @@ export default function App() {
 
     try {
       await postJson("/api/registrar-consulta", payload);
-      showMessage("success", "Simulación calculada y registrada correctamente.");
+      showMessage("success", "Simulación calculada correctamente.");
     } catch (error) {
       showMessage(
         "warning",
@@ -713,7 +713,7 @@ export default function App() {
       <h2>Simulador GNV - Clientes Nuevos - {APP_VERSION}</h2>
 
       <section style={stageStyle}>
-        <h3>I. Datos básicos</h3>
+        <h3>I. Datos</h3>
 
         <div
           style={{
@@ -839,7 +839,7 @@ export default function App() {
 
       {ofertaConsultada && (
         <section style={stageStyle}>
-          <h3>II. Oferta disponible</h3>
+          <h3>II. Oferta Pre Aprobada</h3>
 
           <div style={resultRow}>
             <span>Monto máximo</span>
@@ -923,7 +923,7 @@ export default function App() {
                 onChange={(e) => setSeguroObliga(e.target.value)}
                 style={inputStyle}
               >
-                <option value="Vida Integral">Vida Integral</option>
+                <option value="Vida Integral/Desgravamen">Vida Integral/Desgravamen</option>
                 <option value="Ninguno">Ninguno</option>
               </select>
             </label>
