@@ -44,3 +44,10 @@
 
 - DNI `00252325` → dígito `1`
 - DNI `40659320` → dígito `2`
+
+## Cambios v5
+- “Datos básicos” cambia a “Datos”.
+- “Oferta disponible” cambia a “Oferta Pre Aprobada”.
+- Factores máximos actualizados según segmento, antigüedad y grupo.
+- “Vida Integral” cambia a “Vida Integral/Desgravamen”.
+- Mensaje exitoso simplificado.
