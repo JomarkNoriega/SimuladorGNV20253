@@ -38,6 +38,7 @@ function doPost(e) {
       data.seguroObligatorio,
       data.seguroVoluntario,
       data.cuota,
+      data.factorRecaudoSeleccionado,
       data.factorCalculado,
       data.resultadoOferta,
       data.deviceId,
