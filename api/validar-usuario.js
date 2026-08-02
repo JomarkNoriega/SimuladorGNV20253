@@ -6,7 +6,7 @@ const DEFAULT_AUTHORIZED_DNIS = [
 ];
 
 const DNI_WEIGHTS = [3, 2, 7, 6, 5, 4, 3, 2];
-const DNI_CHECK_DIGIT_MAP = [6, 7, 8, 9, 0, 1, 1, 2, 3, 4, 5];
+const DNI_NUMBER_MAP = "67890123456";
 
 function parseAuthorizedDnis() {
   try {
@@ -31,7 +31,10 @@ function calculateCheckDigit(dni) {
       0
     );
 
-  return String(DNI_CHECK_DIGIT_MAP[sum % 11]);
+  const position = 11 - (sum % 11);
+  const index = position - 1;
+
+  return DNI_NUMBER_MAP.charAt(index);
 }
 
 export default function handler(req, res) {
