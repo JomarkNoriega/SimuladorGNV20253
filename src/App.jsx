@@ -330,88 +330,42 @@ function vehicleSegmentFromRules(segmentoCliente, marca, antiguedad) {
   return "TODOS";
 }
 
+
 const OFFER_RULES = [
-  {
-    segmentos: ["VIP", "PREFERENTE"],
-    edadMin: 0,
-    edadMax: 13,
-    grupo: "Grupo 1",
-    montoMin: 1000,
-    montoMax: 5500,
-  },
-  {
-    segmentos: ["VIP", "PREFERENTE"],
-    edadMin: 0,
-    edadMax: 13,
-    grupo: "Grupo 2",
-    montoMin: 1000,
-    montoMax: 5000,
-  },
-  {
-    segmentos: ["VIP", "PREFERENTE"],
-    edadMin: 14,
-    edadMax: 20,
-    grupo: "Grupo 1",
-    montoMin: 1000,
-    montoMax: 4500,
-  },
-  {
-    segmentos: ["VIP", "PREFERENTE"],
-    edadMin: 14,
-    edadMax: 20,
-    grupo: "Grupo 2",
-    montoMin: 1000,
-    montoMax: 3500,
-  },
-  {
-    segmentos: ["NORMAL"],
-    edadMin: 0,
-    edadMax: 10,
-    grupo: "Grupo 1",
-    montoMin: 1000,
-    montoMax: 4000,
-  },
-  {
-    segmentos: ["NORMAL"],
-    edadMin: 0,
-    edadMax: 10,
-    grupo: "Grupo 2",
-    montoMin: 1000,
-    montoMax: 3500,
-  },
-  {
-    segmentos: ["NORMAL"],
-    edadMin: 11,
-    edadMax: 20,
-    grupo: "TODOS",
-    montoMin: 1000,
-    montoMax: 2500,
-  },
-  {
-    segmentos: ["INCLUSION"],
-    edadMin: 0,
-    edadMax: 20,
-    grupo: "TODOS",
-    montoMin: 1000,
-    montoMax: 2000,
-  },
-  {
-    segmentos: ["EVALUACION"],
-    edadMin: 0,
-    edadMax: 20,
-    grupo: "TODOS",
-    montoMin: 1000,
-    montoMax: 1500,
-  },
-  {
-    segmentos: ["NA"],
-    edadMin: 0,
-    edadMax: 20,
-    grupo: "TODOS",
-    montoMin: 500,
-    montoMax: 500,
-  },
+  { segmentos: ["VIP", "PREFERENTE"], edadMin: 0, edadMax: 13, grupos: ["Grupo 1"], montoMin: 1000, montoMax: 5500, plazoMax: 30 },
+  { segmentos: ["VIP", "PREFERENTE"], edadMin: 0, edadMax: 13, grupos: ["Grupo 2"], montoMin: 1000, montoMax: 5000, plazoMax: 30 },
+  { segmentos: ["VIP", "PREFERENTE"], edadMin: 14, edadMax: 20, grupos: ["Grupo 1"], montoMin: 1000, montoMax: 4500, plazoMax: 30 },
+  { segmentos: ["VIP", "PREFERENTE"], edadMin: 14, edadMax: 20, grupos: ["Grupo 2"], montoMin: 1000, montoMax: 3500, plazoMax: 30 },
+  { segmentos: ["NORMAL"], edadMin: 0, edadMax: 10, grupos: ["Grupo 1"], montoMin: 1000, montoMax: 4000, plazoMax: 30 },
+  { segmentos: ["NORMAL"], edadMin: 0, edadMax: 10, grupos: ["Grupo 2"], montoMin: 1000, montoMax: 3500, plazoMax: 30 },
+  { segmentos: ["NORMAL"], edadMin: 11, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 2500, plazoMax: 24 },
+  { segmentos: ["INCLUSION"], edadMin: 0, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 2000, plazoMax: 24 },
+  { segmentos: ["EVALUACION"], edadMin: 0, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 1500, plazoMax: 24 },
+  { segmentos: ["NA"], edadMin: 0, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 500, montoMax: 500, plazoMax: 6 },
 ];
+
+const APP_VERSION = "2026.07.31.v2";
+function onlyDigits(value, maxLength = 8) {
+  return value.replace(/\D/g, "").slice(0, maxLength);
+}
+
+function normalizePlate(value) {
+  return value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 8);
+}
+
+function getOfferRule(segmentoCliente, grupoMarca, antiguedad) {
+  return OFFER_RULES.find(
+    (rule) =>
+      rule.segmentos.includes(segmentoCliente) &&
+      antiguedad >= rule.edadMin &&
+      antiguedad <= rule.edadMax &&
+      rule.grupos.includes(grupoMarca)
+  );
+}
+
+function factorLimitForSegment(segmento) {
+  return SEGMENT_RULES[segmento] ?? SEGMENT_RULES.NORMAL;
+}
 
 function formatNumber(value) {
   return new Intl.NumberFormat("es-PE", {
@@ -419,238 +373,573 @@ function formatNumber(value) {
   }).format(value);
 }
 
-function getOfferRule(segmentoCliente, segmentoVehiculo, antiguedad) {
-  return OFFER_RULES.find(
-    (rule) =>
-      rule.segmentos.includes(segmentoCliente) &&
-      antiguedad >= rule.edadMin &&
-      antiguedad <= rule.edadMax &&
-      rule.grupo === segmentoVehiculo
-  );
+function getDeviceId() {
+  const key = "qapaq_gnv_device_id";
+  let id = localStorage.getItem(key);
+
+  if (!id) {
+    id =
+      typeof crypto !== "undefined" && crypto.randomUUID
+        ? crypto.randomUUID()
+        : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    localStorage.setItem(key, id);
+  }
+
+  return id;
 }
 
-function buildRule2Message(segmentoCliente, segmentoVehiculo, antiguedad, rule) {
-  if (!rule) {
-    return "Oferta no corresponde al segmento, volver a calcular.";
+async function postJson(url, body) {
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    throw new Error(data.message || "No fue posible completar la operación.");
   }
 
-  const rangoEdad =
-    rule.edadMin === 0
-      ? `hasta ${rule.edadMax} años`
-      : `mayor de ${rule.edadMin - 1} y hasta ${rule.edadMax} años`;
-
-  const rangoMonto =
-    rule.montoMin === rule.montoMax
-      ? `S/ ${formatNumber(rule.montoMin)}`
-      : `entre S/ ${formatNumber(rule.montoMin)} y S/ ${formatNumber(
-          rule.montoMax
-        )}`;
-
-  return `Para el segmento cliente ${segmentoCliente}, vehículo ${segmentoVehiculo} y antigüedad ${rangoEdad}, la oferta debe ser de ${rangoMonto}.`;
-}
-
-function validateOffer(
-  segmentoCliente,
-  segmentoVehiculo,
-  antiguedad,
-  montoSolicitado,
-  marcaValida
-) {
-  if (!marcaValida) {
-    return {
-      valido: false,
-      mensaje: "Seleccione una marca válida del catálogo.",
-      regla: null,
-    };
-  }
-
-  if (!Number.isFinite(antiguedad) || antiguedad < 0 || antiguedad > 20) {
-    return {
-      valido: false,
-      mensaje: "Oferta no corresponde al segmento, volver a calcular.",
-      regla: null,
-    };
-  }
-
-  const regla = getOfferRule(
-    segmentoCliente,
-    segmentoVehiculo,
-    antiguedad
-  );
-
-  if (!regla) {
-    return {
-      valido: false,
-      mensaje: "Oferta no corresponde al segmento, volver a calcular.",
-      regla: null,
-    };
-  }
-
-  const corresponde =
-    montoSolicitado >= regla.montoMin &&
-    montoSolicitado <= regla.montoMax;
-
-  return {
-    valido: corresponde,
-    mensaje: corresponde
-      ? buildRule2Message(
-          segmentoCliente,
-          segmentoVehiculo,
-          antiguedad,
-          regla
-        )
-      : `Oferta no corresponde al segmento, volver a calcular. ${buildRule2Message(
-          segmentoCliente,
-          segmentoVehiculo,
-          antiguedad,
-          regla
-        )}`,
-    regla,
-  };
+  return data;
 }
 
 export default function App() {
   const currentYear = new Date().getFullYear();
-  const [segmento, setSegmento] = useState("INCLUSION");
+
+  const [dniUsuario, setDniUsuario] = useState("");
+  const [digitoChequeo, setDigitoChequeo] = useState("");
+  const [dniCliente, setDniCliente] = useState("");
+  const [segmento, setSegmento] = useState("VIP");
   const [marcaVehiculo, setMarcaVehiculo] = useState("TOYOTA");
-  const [anioModelo, setAnioModelo] = useState(currentYear - 5);
+  const [anioModelo, setAnioModelo] = useState(currentYear - 1);
+  const [placa, setPlaca] = useState("");
+
+  const [ofertaConsultada, setOfertaConsultada] = useState(null);
+  const [montoSolicitado, setMontoSolicitado] = useState(1000);
   const [plazo, setPlazo] = useState(12);
-  const [solicitado, setSolicitado] = useState(2000);
   const [seguroObliga, setSeguroObliga] = useState("Vida Integral");
   const [seguroVol, setSeguroVol] = useState("Solidario");
 
-  const calc = useMemo(() => {
-    const antiguedad = Math.max(0, currentYear - anioModelo);
-    const marcaValida = Boolean(VEHICLE_BRAND_GROUP[marcaVehiculo]);
-    const segmentoVehiculo = vehicleSegmentFromRules(
-      segmento,
-      marcaVehiculo,
-      antiguedad
-    );
-    const validacionOferta = validateOffer(
-      segmento,
-      segmentoVehiculo,
-      antiguedad,
-      solicitado,
-      marcaValida
-    );
+  const [resultado, setResultado] = useState(null);
+  const [mensaje, setMensaje] = useState(null);
+  const [consultando, setConsultando] = useState(false);
+  const [calculando, setCalculando] = useState(false);
+
+  const inputStyle = {
+    width: "100%",
+    padding: 9,
+    marginTop: 5,
+    border: "1px solid #aaa",
+    borderRadius: 4,
+  };
+  const labelStyle = { display: "block", marginTop: 11 };
+  const stageStyle = {
+    border: "1px solid #d7d7d7",
+    borderRadius: 12,
+    padding: 18,
+    marginTop: 16,
+    background: "#fff",
+  };
+  const buttonStyle = {
+    marginTop: 16,
+    padding: "11px 18px",
+    border: 0,
+    borderRadius: 7,
+    background: "#0b5cab",
+    color: "#fff",
+    fontWeight: 700,
+    cursor: "pointer",
+  };
+  const resultRow = {
+    display: "grid",
+    gridTemplateColumns: "minmax(180px, 1fr) minmax(120px, 1fr)",
+    gap: 12,
+    padding: "9px 0",
+    borderBottom: "1px solid #eee",
+  };
+
+  const showMessage = (type, text) => setMensaje({ type, text });
+
+  const validateBasicData = () => {
+    if (!/^\d{8}$/.test(dniUsuario)) {
+      return "El DNI del usuario debe contener exactamente 8 dígitos numéricos.";
+    }
+    if (!/^[0-9A-Z]$/i.test(digitoChequeo)) {
+      return "Ingrese un dígito de chequeo válido.";
+    }
+    if (!/^\d{8}$/.test(dniCliente)) {
+      return "El DNI del cliente debe contener exactamente 8 dígitos numéricos.";
+    }
+    if (!VEHICLE_BRAND_GROUP[marcaVehiculo]) {
+      return "Seleccione una marca válida del catálogo.";
+    }
+    if (!Number.isInteger(anioModelo) || anioModelo < currentYear - 40 || anioModelo > currentYear) {
+      return "Ingrese un año de vehículo válido.";
+    }
+    if (!/^[A-Z0-9]{5,8}$/.test(placa)) {
+      return "La placa debe contener entre 5 y 8 caracteres alfanuméricos.";
+    }
+    return "";
+  };
+
+  const consultarOferta = async () => {
+    setResultado(null);
+    setOfertaConsultada(null);
+    setMensaje(null);
+
+    const basicError = validateBasicData();
+    if (basicError) {
+      showMessage("error", basicError);
+      return;
+    }
+
+    setConsultando(true);
+
+    try {
+      // La validación definitiva del DNI + dígito se realiza en el backend.
+      await postJson("/api/validar-usuario", {
+        dni: dniUsuario,
+        digitoChequeo,
+      });
+
+      const antiguedad = currentYear - anioModelo;
+      const grupoMarca = VEHICLE_BRAND_GROUP[marcaVehiculo];
+      const rule = getOfferRule(segmento, grupoMarca, antiguedad);
+
+      if (!rule) {
+        showMessage(
+          "error",
+          "Oferta no corresponde al segmento, volver a calcular."
+        );
+        return;
+      }
+
+      const factorMax = factorLimitForSegment(segmento);
+
+      const offer = {
+        montoMin: rule.montoMin,
+        montoMax: rule.montoMax,
+        plazoMax: rule.plazoMax,
+        factorMax: factorMax.maxFactor,
+        factorMaxLabel: factorMax.maxLabel,
+        antiguedad,
+        grupoMarca,
+      };
+
+      setOfertaConsultada(offer);
+      setMontoSolicitado(
+        Math.min(Math.max(montoSolicitado, rule.montoMin), rule.montoMax)
+      );
+      setPlazo(Math.min(Math.max(plazo, 1), rule.plazoMax));
+      showMessage("success", "Oferta consultada correctamente.");
+    } catch (error) {
+      showMessage("error", error.message);
+    } finally {
+      setConsultando(false);
+    }
+  };
+
+  const calcularNegociacion = async () => {
+    if (!ofertaConsultada) {
+      showMessage("error", "Primero debe consultar la oferta.");
+      return;
+    }
+
+    if (
+      montoSolicitado < ofertaConsultada.montoMin ||
+      montoSolicitado > ofertaConsultada.montoMax
+    ) {
+      showMessage(
+        "error",
+        `El monto solicitado debe estar entre S/ ${formatNumber(
+          ofertaConsultada.montoMin
+        )} y S/ ${formatNumber(ofertaConsultada.montoMax)}.`
+      );
+      return;
+    }
+
+    if (plazo < 1 || plazo > ofertaConsultada.plazoMax) {
+      showMessage(
+        "error",
+        `El plazo debe estar entre 1 y ${ofertaConsultada.plazoMax} meses.`
+      );
+      return;
+    }
+
+    setCalculando(true);
+    setMensaje(null);
+
     const costoObliga =
-      seguroObliga === "Vida Integral" ? solicitado * 0.1 : 0;
+      seguroObliga === "Vida Integral" ? montoSolicitado * 0.1 : 0;
+
     let costoVol = 0;
     if (seguroVol === "Solidario") costoVol = plazo * 8;
     else if (seguroVol === "Ruta") costoVol = 60;
     else if (seguroVol === "Solidario + Ruta") costoVol = plazo * 8 + 60;
-    const total = solicitado + costoObliga + costoVol;
-    const tea = teaFromTotal(total);
+
+    const totalFinanciado = montoSolicitado + costoObliga + costoVol;
+    const tea = teaFromTotal(totalFinanciado);
     const tasaMensual = monthlyRateFromTEA(tea);
-    const cuota = pmt(tasaMensual, plazo, total);
+    const cuota = pmt(tasaMensual, plazo, totalFinanciado);
     const factor = factorFromCuota(segmento, cuota);
-    const rule = SEGMENT_RULES[segmento];
-    const alertaFactor = typeof factor === "string";
-    return {
-      antiguedad,
-      segmentoVehiculo,
+    const factorExcedido =
+      typeof factor === "string" ||
+      (typeof factor === "number" &&
+        factor > ofertaConsultada.factorMax);
+
+    const calculation = {
+      montoOferta: montoSolicitado,
       cuota,
       factor,
-      alertaFactor,
-      limiteFactor: rule.maxLabel,
-      validacionOferta,
+      factorExcedido,
+      totalFinanciado,
+      tea,
+      tasaMensual,
+      costoObliga,
+      costoVol,
     };
-  }, [segmento, marcaVehiculo, anioModelo, plazo, solicitado, seguroObliga, seguroVol, currentYear]);
 
-  const inputStyle = { width: "100%", padding: 9, marginTop: 6 };
-  const labelStyle = { display: "block", marginTop: 12 };
-  const panelStyle = { border: "1px solid #ddd", borderRadius: 12, padding: 18 };
-  const resultBox = { padding: 12, borderRadius: 10, background: "#f7f7f7" };
+    setResultado(calculation);
+
+    const payload = {
+      dniUsuario,
+      digitoChequeo,
+      dniCliente,
+      segmentoCliente: segmento,
+      marcaVehiculo,
+      anioModelo,
+      antiguedad: ofertaConsultada.antiguedad,
+      segmentoVehiculo: ofertaConsultada.grupoMarca,
+      placa,
+      montoMaximo: ofertaConsultada.montoMax,
+      plazoMaximo: ofertaConsultada.plazoMax,
+      factorMaximo: ofertaConsultada.factorMaxLabel,
+      montoSolicitado,
+      plazo,
+      seguroObligatorio: seguroObliga,
+      seguroVoluntario: seguroVol,
+      cuota,
+      factorCalculado: formatFactor(factor),
+      resultadoOferta: factorExcedido ? "OBSERVADO" : "CONFORME",
+      deviceId: getDeviceId(),
+      versionAplicacion: APP_VERSION,
+    };
+
+    try {
+      await postJson("/api/registrar-consulta", payload);
+      showMessage("success", "Simulación calculada y registrada correctamente.");
+    } catch (error) {
+      showMessage(
+        "warning",
+        `La simulación fue calculada, pero no pudo registrarse: ${error.message}`
+      );
+    } finally {
+      setCalculando(false);
+    }
+  };
 
   return (
-    <div style={{ fontFamily: "system-ui", padding: 20, maxWidth: 1100, margin: "0 auto" }}>
-      <h2>Simulador GNV - Clientes Nuevos - 2026.07.31.v1</h2>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 16, marginTop: 12 }}>
-        <div style={panelStyle}>
-          <h3>Entradas</h3>
-          <label style={labelStyle}>Segmento cliente
-            <select value={segmento} onChange={(e) => setSegmento(e.target.value)} style={inputStyle}>
-              {['VIP','PREFERENTE','NORMAL','INCLUSION','EVALUACION','NA'].map(s => <option key={s} value={s}>{s}</option>)}
+    <div
+      style={{
+        fontFamily: "system-ui",
+        padding: 20,
+        maxWidth: 1000,
+        margin: "0 auto",
+        background: "#fafafa",
+      }}
+    >
+      <h2>Simulador GNV - Clientes Nuevos - {APP_VERSION}</h2>
+
+      <section style={stageStyle}>
+        <h3>I. Datos básicos</h3>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+            gap: 14,
+          }}
+        >
+          <label style={labelStyle}>
+            DNI del usuario
+            <input
+              value={dniUsuario}
+              inputMode="numeric"
+              maxLength={8}
+              onChange={(e) => setDniUsuario(onlyDigits(e.target.value))}
+              style={inputStyle}
+              placeholder="8 dígitos"
+            />
+          </label>
+
+          <label style={labelStyle}>
+            Dígito de chequeo
+            <input
+              value={digitoChequeo}
+              maxLength={1}
+              onChange={(e) =>
+                setDigitoChequeo(
+                  e.target.value.toUpperCase().replace(/[^0-9A-Z]/g, "")
+                )
+              }
+              style={inputStyle}
+              placeholder="1 carácter"
+            />
+          </label>
+
+          <label style={labelStyle}>
+            DNI del cliente
+            <input
+              value={dniCliente}
+              inputMode="numeric"
+              maxLength={8}
+              onChange={(e) => setDniCliente(onlyDigits(e.target.value))}
+              style={inputStyle}
+              placeholder="8 dígitos"
+            />
+          </label>
+
+          <label style={labelStyle}>
+            Segmento cliente
+            <select
+              value={segmento}
+              onChange={(e) => setSegmento(e.target.value)}
+              style={inputStyle}
+            >
+              {["VIP", "PREFERENTE", "NORMAL", "INCLUSION", "EVALUACION", "NA"].map(
+                (item) => (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                )
+              )}
             </select>
           </label>
-          <label style={labelStyle}>Marca del vehículo
+
+          <label style={labelStyle}>
+            Marca
             <input
               type="text"
               list="vehicle-brand-catalog"
               value={marcaVehiculo}
-              placeholder="Escriba parte de la marca..."
-              autoComplete="off"
-              onChange={(e) => setMarcaVehiculo(e.target.value.toUpperCase())}
+              onChange={(e) =>
+                setMarcaVehiculo(e.target.value.toUpperCase())
+              }
               onBlur={() =>
                 setMarcaVehiculo(marcaVehiculo.trim().toUpperCase())
               }
               style={inputStyle}
+              placeholder="Buscar marca..."
             />
             <datalist id="vehicle-brand-catalog">
               {VEHICLE_BRANDS.map((marca) => (
                 <option key={marca} value={marca} />
               ))}
             </datalist>
-            <div style={{ fontSize: 12, color: "#555", marginTop: 4 }}>
-              Escriba para buscar y seleccione una marca válida del catálogo.
-            </div>
           </label>
-          <label style={labelStyle}>Año de modelo
-            <input type="number" min={currentYear - 40} max={currentYear} value={anioModelo}
+
+          <label style={labelStyle}>
+            Año del vehículo
+            <input
+              type="number"
+              min={currentYear - 40}
+              max={currentYear}
+              value={anioModelo}
               onChange={(e) => setAnioModelo(Number(e.target.value))}
-              onBlur={() => setAnioModelo(clamp(anioModelo, currentYear - 40, currentYear))} style={inputStyle}/>
+              style={inputStyle}
+            />
           </label>
-          <label style={labelStyle}>Plazo (meses)
-            <input type="number" min={LIMITS.plazoMin} max={LIMITS.plazoMax} value={plazo}
-              onChange={(e) => setPlazo(Number(e.target.value))}
-              onBlur={() => setPlazo(clamp(plazo, LIMITS.plazoMin, LIMITS.plazoMax))} style={inputStyle}/>
-          </label>
-          <label style={labelStyle}>Monto solicitado (S/)
-            <input type="number" min={LIMITS.montoMin} max={LIMITS.montoMax} step={100} value={solicitado}
-              onChange={(e) => setSolicitado(Number(e.target.value))}
-              onBlur={() => setSolicitado(clamp(solicitado, LIMITS.montoMin, LIMITS.montoMax))} style={inputStyle}/>
-          </label>
-          <label style={labelStyle}>Seguro obligatorio
-            <select value={seguroObliga} onChange={(e) => setSeguroObliga(e.target.value)} style={inputStyle}>
-              <option value="Vida Integral">Vida Integral</option><option value="Ninguno">Ninguno</option>
-            </select>
-          </label>
-          <label style={labelStyle}>Seguro voluntario
-            <select value={seguroVol} onChange={(e) => setSeguroVol(e.target.value)} style={inputStyle}>
-              <option value="Solidario">Solidario</option><option value="Ruta">Ruta</option>
-              <option value="Solidario + Ruta">Solidario + Ruta</option><option value="Ninguno">Ninguno</option>
-            </select>
+
+          <label style={labelStyle}>
+            Placa
+            <input
+              value={placa}
+              maxLength={8}
+              onChange={(e) => setPlaca(normalizePlate(e.target.value))}
+              style={inputStyle}
+              placeholder="Ej. ATI219"
+            />
           </label>
         </div>
-        <div style={panelStyle}>
-          <h3>Resultados</h3>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 12 }}>
-            <div style={resultBox}><div>Antigüedad</div><strong>{calc.antiguedad} años</strong></div>
-            <div style={resultBox}><div>Segmento vehículo</div><strong>{calc.segmentoVehiculo}</strong></div>
-            <div style={resultBox}><div>Cuota</div><strong>{formatPEN(calc.cuota)}</strong></div>
-            <div style={resultBox}><div>Factor</div><strong>{formatFactor(calc.factor)}</strong></div>
+
+        <button
+          type="button"
+          onClick={consultarOferta}
+          disabled={consultando}
+          style={{
+            ...buttonStyle,
+            opacity: consultando ? 0.65 : 1,
+          }}
+        >
+          {consultando ? "Consultando..." : "Consultar oferta"}
+        </button>
+      </section>
+
+      {ofertaConsultada && (
+        <section style={stageStyle}>
+          <h3>II. Oferta disponible</h3>
+
+          <div style={resultRow}>
+            <span>Monto máximo</span>
+            <strong>{formatPEN(ofertaConsultada.montoMax)}</strong>
           </div>
-          {calc.alertaFactor && <div style={{ marginTop: 16, padding: 12, borderRadius: 10, border: "1px solid #cc0000", color: "#cc0000", fontWeight: 600 }}>
-            Alerta: el factor supera el límite permitido de {calc.limiteFactor} para el segmento {segmento}.
-          </div>}
+          <div style={resultRow}>
+            <span>Plazo máximo</span>
+            <strong>{ofertaConsultada.plazoMax} meses</strong>
+          </div>
+          <div style={resultRow}>
+            <span>Factor máximo de recaudo</span>
+            <strong>{ofertaConsultada.factorMaxLabel}</strong>
+          </div>
+        </section>
+      )}
+
+      {ofertaConsultada && (
+        <section style={stageStyle}>
+          <h3>III. Simulación</h3>
+
           <div
             style={{
-              marginTop: 16,
-              padding: 12,
-              borderRadius: 10,
-              border: calc.validacionOferta.valido
-                ? "1px solid #2e7d32"
-                : "1px solid #cc0000",
-              color: calc.validacionOferta.valido ? "#2e7d32" : "#cc0000",
-              background: calc.validacionOferta.valido ? "#f3fbf4" : "#fff5f5",
-              fontWeight: 600,
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+              gap: 14,
             }}
           >
-            {calc.validacionOferta.mensaje}
+            <label style={labelStyle}>
+              Monto solicitado
+              <input
+                type="number"
+                min={ofertaConsultada.montoMin}
+                max={ofertaConsultada.montoMax}
+                step={100}
+                value={montoSolicitado}
+                onChange={(e) => setMontoSolicitado(Number(e.target.value))}
+                style={inputStyle}
+              />
+            </label>
+
+            <label style={labelStyle}>
+              Plazo
+              <input
+                type="number"
+                min={1}
+                max={ofertaConsultada.plazoMax}
+                value={plazo}
+                onChange={(e) => setPlazo(Number(e.target.value))}
+                style={inputStyle}
+              />
+            </label>
+
+            <label style={labelStyle}>
+              Seguro obligatorio
+              <select
+                value={seguroObliga}
+                onChange={(e) => setSeguroObliga(e.target.value)}
+                style={inputStyle}
+              >
+                <option value="Vida Integral">Vida Integral</option>
+                <option value="Ninguno">Ninguno</option>
+              </select>
+            </label>
+
+            <label style={labelStyle}>
+              Seguro voluntario
+              <select
+                value={seguroVol}
+                onChange={(e) => setSeguroVol(e.target.value)}
+                style={inputStyle}
+              >
+                <option value="Solidario">Solidario</option>
+                <option value="Ruta">Ruta protegida</option>
+                <option value="Solidario + Ruta">Solidario + Ruta</option>
+                <option value="Ninguno">Ninguno</option>
+              </select>
+            </label>
           </div>
+
+          {resultado && (
+            <div style={{ ...resultRow, marginTop: 12 }}>
+              <span>Factor de recaudo</span>
+              <strong>{formatFactor(resultado.factor)}</strong>
+            </div>
+          )}
+
+          <button
+            type="button"
+            onClick={calcularNegociacion}
+            disabled={calculando}
+            style={{
+              ...buttonStyle,
+              opacity: calculando ? 0.65 : 1,
+            }}
+          >
+            {calculando ? "Calculando..." : "Calcular negociación"}
+          </button>
+        </section>
+      )}
+
+      {resultado && (
+        <section style={stageStyle}>
+          <h3>IV. Resultado de negociación</h3>
+
+          <div style={resultRow}>
+            <span>Monto de oferta</span>
+            <strong>{formatPEN(resultado.montoOferta)}</strong>
+          </div>
+          <div style={resultRow}>
+            <span>Cuota</span>
+            <strong>{formatPEN(resultado.cuota)}</strong>
+          </div>
+
+          {resultado.factorExcedido && (
+            <div
+              style={{
+                marginTop: 16,
+                padding: 13,
+                border: "1px solid #d40000",
+                borderRadius: 8,
+                color: "#d40000",
+                fontWeight: 700,
+              }}
+            >
+              Alerta: el factor supera el límite permitido de{" "}
+              {ofertaConsultada.factorMaxLabel}.
+            </div>
+          )}
+        </section>
+      )}
+
+      {mensaje && (
+        <div
+          style={{
+            marginTop: 16,
+            padding: 12,
+            borderRadius: 8,
+            border:
+              mensaje.type === "error"
+                ? "1px solid #c62828"
+                : mensaje.type === "warning"
+                ? "1px solid #ef6c00"
+                : "1px solid #2e7d32",
+            color:
+              mensaje.type === "error"
+                ? "#c62828"
+                : mensaje.type === "warning"
+                ? "#ef6c00"
+                : "#2e7d32",
+            background:
+              mensaje.type === "error"
+                ? "#fff5f5"
+                : mensaje.type === "warning"
+                ? "#fff8e1"
+                : "#f3fbf4",
+            fontWeight: 600,
+          }}
+        >
+          {mensaje.text}
         </div>
-      </div>
+      )}
 
       <footer
         style={{
