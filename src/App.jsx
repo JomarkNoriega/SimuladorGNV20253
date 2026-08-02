@@ -344,12 +344,13 @@ const OFFER_RULES = [
   { segmentos: ["NA"], edadMin: 0, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 500, montoMax: 500, plazoMax: 6 },
 ];
 
-const APP_VERSION = "2026.07.31.v2";
+const APP_VERSION = "2026.07.31.v3";
 
 const DNI_WEIGHTS = [3, 2, 7, 6, 5, 4, 3, 2];
-const DNI_CHECK_DIGIT_MAP = [6, 7, 8, 9, 0, 1, 1, 2, 3, 4, 5];
+const DNI_NUMBER_MAP = "67890123456";
+const DNI_LETTER_MAP = "KABCDEFGHIJ";
 
-function calculatePeruvianDniCheckDigit(dni) {
+function calculatePeruvianDniCheckDigit(dni, returnType = "NUMERO") {
   if (!/^\d{8}$/.test(dni)) return null;
 
   const sum = dni
@@ -360,11 +361,27 @@ function calculatePeruvianDniCheckDigit(dni) {
       0
     );
 
-  return String(DNI_CHECK_DIGIT_MAP[sum % 11]);
+  // Equivalente a SQL:
+  // posicion = 11 - (suma % 11)
+  // SUBSTRING usa base 1; charAt usa base 0.
+  const position = 11 - (sum % 11);
+  const index = position - 1;
+
+  const map =
+    returnType.toUpperCase() === "LETRA"
+      ? DNI_LETTER_MAP
+      : DNI_NUMBER_MAP;
+
+  return map.charAt(index);
 }
 
 function isValidPeruvianDniCheckDigit(dni, checkDigit) {
-  return calculatePeruvianDniCheckDigit(dni) === String(checkDigit);
+  const calculated = calculatePeruvianDniCheckDigit(dni, "NUMERO");
+
+  return (
+    calculated !== null &&
+    calculated === String(checkDigit).trim()
+  );
 }
 
 function onlyDigits(value, maxLength = 8) {
