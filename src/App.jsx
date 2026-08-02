@@ -345,12 +345,34 @@ const OFFER_RULES = [
 ];
 
 const APP_VERSION = "2026.07.31.v2";
+
+const DNI_WEIGHTS = [3, 2, 7, 6, 5, 4, 3, 2];
+const DNI_CHECK_DIGIT_MAP = [6, 7, 8, 9, 0, 1, 1, 2, 3, 4, 5];
+
+function calculatePeruvianDniCheckDigit(dni) {
+  if (!/^\d{8}$/.test(dni)) return null;
+
+  const sum = dni
+    .split("")
+    .reduce(
+      (total, digit, index) =>
+        total + Number(digit) * DNI_WEIGHTS[index],
+      0
+    );
+
+  return String(DNI_CHECK_DIGIT_MAP[sum % 11]);
+}
+
+function isValidPeruvianDniCheckDigit(dni, checkDigit) {
+  return calculatePeruvianDniCheckDigit(dni) === String(checkDigit);
+}
+
 function onlyDigits(value, maxLength = 8) {
   return value.replace(/\D/g, "").slice(0, maxLength);
 }
 
 function normalizePlate(value) {
-  return value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 8);
+  return value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6);
 }
 
 function getOfferRule(segmentoCliente, grupoMarca, antiguedad) {
@@ -418,6 +440,7 @@ export default function App() {
   const [ofertaConsultada, setOfertaConsultada] = useState(null);
   const [montoSolicitado, setMontoSolicitado] = useState(1000);
   const [plazo, setPlazo] = useState(12);
+  const [factorRecaudo, setFactorRecaudo] = useState(85);
   const [seguroObliga, setSeguroObliga] = useState("Vida Integral");
   const [seguroVol, setSeguroVol] = useState("Solidario");
 
@@ -465,8 +488,11 @@ export default function App() {
     if (!/^\d{8}$/.test(dniUsuario)) {
       return "El DNI del usuario debe contener exactamente 8 dígitos numéricos.";
     }
-    if (!/^[0-9A-Z]$/i.test(digitoChequeo)) {
-      return "Ingrese un dígito de chequeo válido.";
+    if (!/^\d$/.test(digitoChequeo)) {
+      return "El dígito de chequeo debe ser un único dígito numérico.";
+    }
+    if (!isValidPeruvianDniCheckDigit(dniUsuario, digitoChequeo)) {
+      return "El dígito de chequeo no corresponde al DNI del usuario.";
     }
     if (!/^\d{8}$/.test(dniCliente)) {
       return "El DNI del cliente debe contener exactamente 8 dígitos numéricos.";
@@ -477,8 +503,8 @@ export default function App() {
     if (!Number.isInteger(anioModelo) || anioModelo < currentYear - 40 || anioModelo > currentYear) {
       return "Ingrese un año de vehículo válido.";
     }
-    if (!/^[A-Z0-9]{5,8}$/.test(placa)) {
-      return "La placa debe contener entre 5 y 8 caracteres alfanuméricos.";
+    if (!/^[A-Z0-9]{6}$/.test(placa)) {
+      return "La placa debe contener exactamente 6 caracteres alfanuméricos.";
     }
     return "";
   };
@@ -532,6 +558,7 @@ export default function App() {
         Math.min(Math.max(montoSolicitado, rule.montoMin), rule.montoMax)
       );
       setPlazo(Math.min(Math.max(plazo, 1), rule.plazoMax));
+      setFactorRecaudo(Math.round(factorMax.maxFactor * 100));
       showMessage("success", "Oferta consultada correctamente.");
     } catch (error) {
       showMessage("error", error.message);
@@ -567,6 +594,20 @@ export default function App() {
       return;
     }
 
+    const factorMaxPct = Math.round(ofertaConsultada.factorMax * 100);
+
+    if (
+      !Number.isFinite(factorRecaudo) ||
+      factorRecaudo < 0 ||
+      factorRecaudo > factorMaxPct
+    ) {
+      showMessage(
+        "error",
+        `El factor de recaudo debe estar entre 0% y ${factorMaxPct}%.`
+      );
+      return;
+    }
+
     setCalculando(true);
     setMensaje(null);
 
@@ -582,16 +623,18 @@ export default function App() {
     const tea = teaFromTotal(totalFinanciado);
     const tasaMensual = monthlyRateFromTEA(tea);
     const cuota = pmt(tasaMensual, plazo, totalFinanciado);
-    const factor = factorFromCuota(segmento, cuota);
+    const factorCalculado = factorFromCuota(segmento, cuota);
+    const factorSeleccionado = factorRecaudo / 100;
     const factorExcedido =
-      typeof factor === "string" ||
-      (typeof factor === "number" &&
-        factor > ofertaConsultada.factorMax);
+      typeof factorCalculado === "string" ||
+      (typeof factorCalculado === "number" &&
+        factorCalculado > factorSeleccionado);
 
     const calculation = {
       montoOferta: montoSolicitado,
       cuota,
-      factor,
+      factor: factorCalculado,
+      factorSeleccionado,
       factorExcedido,
       totalFinanciado,
       tea,
@@ -620,7 +663,8 @@ export default function App() {
       seguroObligatorio: seguroObliga,
       seguroVoluntario: seguroVol,
       cuota,
-      factorCalculado: formatFactor(factor),
+      factorRecaudoSeleccionado: `${factorRecaudo.toFixed(0)}%`,
+      factorCalculado: formatFactor(factorCalculado),
       resultadoOferta: factorExcedido ? "OBSERVADO" : "CONFORME",
       deviceId: getDeviceId(),
       versionAplicacion: APP_VERSION,
@@ -680,11 +724,11 @@ export default function App() {
               maxLength={1}
               onChange={(e) =>
                 setDigitoChequeo(
-                  e.target.value.toUpperCase().replace(/[^0-9A-Z]/g, "")
+                  e.target.value.replace(/\D/g, "")
                 )
               }
               style={inputStyle}
-              placeholder="1 carácter"
+              placeholder="1 dígito"
             />
           </label>
 
@@ -755,7 +799,7 @@ export default function App() {
             Placa
             <input
               value={placa}
-              maxLength={8}
+              maxLength={6}
               onChange={(e) => setPlaca(normalizePlate(e.target.value))}
               style={inputStyle}
               placeholder="Ej. ATI219"
@@ -832,6 +876,30 @@ export default function App() {
             </label>
 
             <label style={labelStyle}>
+              Factor de recaudo (%)
+              <input
+                type="number"
+                min={0}
+                max={Math.round(ofertaConsultada.factorMax * 100)}
+                step={5}
+                value={factorRecaudo}
+                onChange={(e) => setFactorRecaudo(Number(e.target.value))}
+                onBlur={() =>
+                  setFactorRecaudo(
+                    Math.min(
+                      Math.max(Number(factorRecaudo) || 0, 0),
+                      Math.round(ofertaConsultada.factorMax * 100)
+                    )
+                  )
+                }
+                style={inputStyle}
+              />
+              <div style={{ fontSize: 12, color: "#555", marginTop: 4 }}>
+                Máximo permitido: {ofertaConsultada.factorMaxLabel}
+              </div>
+            </label>
+
+            <label style={labelStyle}>
               Seguro obligatorio
               <select
                 value={seguroObliga}
@@ -859,10 +927,16 @@ export default function App() {
           </div>
 
           {resultado && (
-            <div style={{ ...resultRow, marginTop: 12 }}>
-              <span>Factor de recaudo</span>
-              <strong>{formatFactor(resultado.factor)}</strong>
-            </div>
+            <>
+              <div style={{ ...resultRow, marginTop: 12 }}>
+                <span>Factor de recaudo seleccionado</span>
+                <strong>{factorRecaudo.toFixed(0)}%</strong>
+              </div>
+              <div style={resultRow}>
+                <span>Factor requerido por la cuota</span>
+                <strong>{formatFactor(resultado.factor)}</strong>
+              </div>
+            </>
           )}
 
           <button
@@ -903,8 +977,8 @@ export default function App() {
                 fontWeight: 700,
               }}
             >
-              Alerta: el factor supera el límite permitido de{" "}
-              {ofertaConsultada.factorMaxLabel}.
+              Alerta: el factor requerido por la cuota supera el factor de
+              recaudo seleccionado de {factorRecaudo.toFixed(0)}%.
             </div>
           )}
         </section>
