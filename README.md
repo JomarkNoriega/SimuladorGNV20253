@@ -34,8 +34,13 @@
 
 ## Validaciones incorporadas
 - Placa: exactamente 6 caracteres alfanuméricos.
-- Dígito de chequeo: se calcula mediante módulo 11 con factores
-  `3, 2, 7, 6, 5, 4, 3, 2` y tabla de conversión
-  `6, 7, 8, 9, 0, 1, 1, 2, 3, 4, 5`.
+- Dígito de chequeo: usa pesos `3, 2, 7, 6, 5, 4, 3, 2`, posición `11 - (suma % 11)` y mapa numérico `67890123456`.
+
 - Factor de recaudo: editable en la simulación, sin exceder el máximo de la oferta.
 - La alerta compara el factor requerido por la cuota con el factor seleccionado.
+
+
+## Casos de validación del dígito de chequeo
+
+- DNI `00252325` → dígito `1`
+- DNI `40659320` → dígito `2`
