@@ -13,8 +13,8 @@
   - factor por tabla del segmento.
 
 ## Variables de entorno en Vercel
-- `AUTHORIZED_USERS_JSON`: JSON de DNI y dígito de chequeo.
-  Ejemplo: `{"00252325":"1","00252326":"X"}`
+- `AUTHORIZED_DNIS_JSON`: arreglo JSON con los DNI autorizados, sin dígito de chequeo.
+  Ejemplo: `["00252325","00252326","00252327","40659320"]`
 - `GOOGLE_APPS_SCRIPT_URL`: URL del Web App desplegado en Apps Script.
 - `GNV_SHARED_SECRET`: clave compartida entre Vercel y Apps Script.
 
@@ -30,3 +30,12 @@
 ## Pendiente de definición
 - Dígitos de chequeo de los DNI 00252326, 00252327 y 40659320.
 - Fórmula/costo de la opción Gravamen, si debe incorporarse.
+
+
+## Validaciones incorporadas
+- Placa: exactamente 6 caracteres alfanuméricos.
+- Dígito de chequeo: se calcula mediante módulo 11 con factores
+  `3, 2, 7, 6, 5, 4, 3, 2` y tabla de conversión
+  `6, 7, 8, 9, 0, 1, 1, 2, 3, 4, 5`.
+- Factor de recaudo: editable en la simulación, sin exceder el máximo de la oferta.
+- La alerta compara el factor requerido por la cuota con el factor seleccionado.
