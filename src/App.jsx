@@ -953,8 +953,7 @@ export default function App() {
                 fontWeight: 700,
               }}
             >
-              Alerta: el factor requerido por la cuota supera el límite permitido de {ofertaConsultada.factorMaxLabel}. 
-DEBE VOLVER A GENERAR LA SIMULACIÓN.
+              Alerta: el factor requerido por la cuota supera el límite permitido de {ofertaConsultada.factorMaxLabel}. DEBE VOLVER A GENERAR LA SIMULACIÓN.
             </div>
           )}
         </section>
