@@ -70,3 +70,9 @@
 - Se mantiene la validación del DNI de usuario:
   - exactamente 8 dígitos numéricos;
   - existencia en `AUTHORIZED_DNIS_JSON`.
+
+## Cambios v8
+- Nuevo rango de antigüedad: 21 a 25 años.
+- VIP, PREFERENTE, NORMAL, INCLUSION y EVALUACION: oferta exacta de S/ 1,000.
+- NA: oferta exacta de S/ 500.
+- Antigüedad máxima permitida: 25 años.
