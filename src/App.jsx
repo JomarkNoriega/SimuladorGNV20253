@@ -336,15 +336,24 @@ const OFFER_RULES = [
   { segmentos: ["VIP", "PREFERENTE"], edadMin: 0, edadMax: 13, grupos: ["Grupo 2"], montoMin: 1000, montoMax: 5000, plazoMin: 12, plazoMax: 30, factorMax: 0.75 },
   { segmentos: ["VIP", "PREFERENTE"], edadMin: 14, edadMax: 20, grupos: ["Grupo 1"], montoMin: 1000, montoMax: 4500, plazoMin: 12, plazoMax: 30, factorMax: 0.65 },
   { segmentos: ["VIP", "PREFERENTE"], edadMin: 14, edadMax: 20, grupos: ["Grupo 2"], montoMin: 1000, montoMax: 3500, plazoMin: 12, plazoMax: 30, factorMax: 0.55 },
+  { segmentos: ["VIP", "PREFERENTE"], edadMin: 21, edadMax: 25, grupos: ["Grupo 1", "Grupo 2"], montoMin: 1000, montoMax: 1000, plazoMin: 12, plazoMax: 30, factorMax: 0.50 },
+
   { segmentos: ["NORMAL"], edadMin: 0, edadMax: 10, grupos: ["Grupo 1"], montoMin: 1000, montoMax: 4000, plazoMin: 12, plazoMax: 30, factorMax: 0.60 },
   { segmentos: ["NORMAL"], edadMin: 0, edadMax: 10, grupos: ["Grupo 2"], montoMin: 1000, montoMax: 3500, plazoMin: 12, plazoMax: 30, factorMax: 0.55 },
   { segmentos: ["NORMAL"], edadMin: 11, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 2500, plazoMin: 12, plazoMax: 24, factorMax: 0.50 },
+  { segmentos: ["NORMAL"], edadMin: 21, edadMax: 25, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 1000, plazoMin: 12, plazoMax: 24, factorMax: 0.50 },
+
   { segmentos: ["INCLUSION"], edadMin: 0, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 2000, plazoMin: 12, plazoMax: 24, factorMax: 0.50 },
+  { segmentos: ["INCLUSION"], edadMin: 21, edadMax: 25, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 1000, plazoMin: 12, plazoMax: 24, factorMax: 0.50 },
+
   { segmentos: ["EVALUACION"], edadMin: 0, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 1500, plazoMin: 12, plazoMax: 24, factorMax: 0.50 },
+  { segmentos: ["EVALUACION"], edadMin: 21, edadMax: 25, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 1000, plazoMin: 12, plazoMax: 24, factorMax: 0.50 },
+
   { segmentos: ["NA"], edadMin: 0, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 500, montoMax: 500, plazoMin: 6, plazoMax: 6, factorMax: 0.50 },
+  { segmentos: ["NA"], edadMin: 21, edadMax: 25, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 500, montoMax: 500, plazoMin: 6, plazoMax: 6, factorMax: 0.50 },
 ];
 
-const APP_VERSION = "2026.07.31.v6";
+const APP_VERSION = "2026.08.03.v1";
 
 const DNI_WEIGHTS = [3, 2, 7, 6, 5, 4, 3, 2];
 const DNI_NUMBER_MAP = "67890123456";
@@ -510,7 +519,7 @@ if (!/^\d{8}$/.test(dniCliente)) {
     if (!VEHICLE_BRAND_GROUP[marcaVehiculo]) {
       return "Seleccione una marca válida del catálogo.";
     }
-    if (!Number.isInteger(anioModelo) || anioModelo < currentYear - 40 || anioModelo > currentYear) {
+    if (!Number.isInteger(anioModelo) || anioModelo < currentYear - 25 || anioModelo > currentYear) {
       return "Ingrese un año de vehículo válido.";
     }
     if (!/^[A-Z0-9]{6}$/.test(placa)) {
@@ -770,7 +779,7 @@ if (!/^\d{8}$/.test(dniCliente)) {
             Año del vehículo
             <input
               type="number"
-              min={currentYear - 40}
+              min={currentYear - 25}
               max={currentYear}
               value={anioModelo}
               onChange={(e) => setAnioModelo(Number(e.target.value))}
@@ -929,7 +938,7 @@ if (!/^\d{8}$/.test(dniCliente)) {
                 fontWeight: 700,
               }}
             >
-              Alerta: el factor requerido por la cuota supera el límite permitido. DEBE VOLVER A GENERAR LA SIMULACIÓN.
+              Alerta: el factor requerido por la cuota supera el límite. DEBE VOLVER A GENERAR LA SIMULACIÓN.
             </div>
           )}
         </section>
