@@ -72,47 +72,47 @@ const TEA_TABLE = [
 const FACTOR_TABLES = {
   VIP: [
     { cuotaMin: 0, factor: 0.5 },
-    { cuotaMin: 280, factor: 0.55 },
-    { cuotaMin: 308, factor: 0.6 },
-    { cuotaMin: 336, factor: 0.65 },
-    { cuotaMin: 364, factor: 0.7 },
-    { cuotaMin: 392, factor: 0.75 },
-    { cuotaMin: 420, factor: 0.8 },
-    { cuotaMin: 448, factor: 0.85 },
-    { cuotaMin: 476, factor: ">85%" },
+    { cuotaMin: 350, factor: 0.55 },
+    { cuotaMin: 385, factor: 0.6 },
+    { cuotaMin: 420, factor: 0.65 },
+    { cuotaMin: 455, factor: 0.7 },
+    { cuotaMin: 490, factor: 0.75 },
+    { cuotaMin: 525, factor: 0.8 },
+    { cuotaMin: 560, factor: 0.85 },
+    { cuotaMin: 595, factor: ">85%" },
   ],
   PREFERENTE: [
     { cuotaMin: 0, factor: 0.5 },
-    { cuotaMin: 280, factor: 0.55 },
-    { cuotaMin: 308, factor: 0.6 },
-    { cuotaMin: 336, factor: 0.65 },
-    { cuotaMin: 364, factor: 0.7 },
-    { cuotaMin: 392, factor: 0.75 },
-    { cuotaMin: 420, factor: 0.8 },
-    { cuotaMin: 448, factor: 0.85 },
-    { cuotaMin: 476, factor: ">85%" },
+    { cuotaMin: 350, factor: 0.55 },
+    { cuotaMin: 385, factor: 0.6 },
+    { cuotaMin: 420, factor: 0.65 },
+    { cuotaMin: 455, factor: 0.7 },
+    { cuotaMin: 490, factor: 0.75 },
+    { cuotaMin: 525, factor: 0.8 },
+    { cuotaMin: 560, factor: 0.85 },
+    { cuotaMin: 595, factor: ">85%" },
   ],
   NORMAL: [
     { cuotaMin: 0, factor: 0.5 },
-    { cuotaMin: 280, factor: 0.55 },
-    { cuotaMin: 308, factor: 0.6 },
-    { cuotaMin: 336, factor: 0.65 },
-    { cuotaMin: 364, factor: 0.7 },
-    { cuotaMin: 392, factor: 0.75 },
-    { cuotaMin: 420, factor: 0.8 },
-    { cuotaMin: 448, factor: 0.85 },
-    { cuotaMin: 476, factor: ">85%" },
+    { cuotaMin: 350, factor: 0.55 },
+    { cuotaMin: 385, factor: 0.6 },
+    { cuotaMin: 420, factor: 0.65 },
+    { cuotaMin: 455, factor: 0.7 },
+    { cuotaMin: 490, factor: 0.75 },
+    { cuotaMin: 525, factor: 0.8 },
+    { cuotaMin: 560, factor: 0.85 },
+    { cuotaMin: 595, factor: ">85%" },
   ],
   EVALUACION: [
     { cuotaMin: 0, factor: 0.5 },
-    { cuotaMin: 160, factor: 0.55 },
-    { cuotaMin: 176, factor: 0.6 },
-    { cuotaMin: 192, factor: 0.65 },
-    { cuotaMin: 208, factor: ">65%" },
-    { cuotaMin: 224, factor: ">65%" },
-    { cuotaMin: 240, factor: ">65%" },
-    { cuotaMin: 256, factor: ">65%" },
-    { cuotaMin: 272, factor: ">65%" },
+    { cuotaMin: 125, factor: 0.55 },
+    { cuotaMin: 137.50000000000003, factor: 0.6 },
+    { cuotaMin: 150, factor: 0.65 },
+    { cuotaMin: 162.5, factor: 0.7 },
+    { cuotaMin: 175, factor: 0.75 },
+    { cuotaMin: 187.5, factor: 0.8 },
+    { cuotaMin: 200, factor: 0.85 },
+    { cuotaMin: 212.5, factor: ">85%" },
   ],
   INCLUSION: [
     { cuotaMin: 0, factor: 0.5 },
@@ -332,19 +332,19 @@ function vehicleSegmentFromRules(segmentoCliente, marca, antiguedad) {
 
 
 const OFFER_RULES = [
-  { segmentos: ["VIP", "PREFERENTE"], edadMin: 0, edadMax: 13, grupos: ["Grupo 1"], montoMin: 1000, montoMax: 5500, plazoMax: 30, factorMax: 0.80 },
-  { segmentos: ["VIP", "PREFERENTE"], edadMin: 0, edadMax: 13, grupos: ["Grupo 2"], montoMin: 1000, montoMax: 5000, plazoMax: 30, factorMax: 0.75 },
-  { segmentos: ["VIP", "PREFERENTE"], edadMin: 14, edadMax: 20, grupos: ["Grupo 1"], montoMin: 1000, montoMax: 4500, plazoMax: 30, factorMax: 0.65 },
-  { segmentos: ["VIP", "PREFERENTE"], edadMin: 14, edadMax: 20, grupos: ["Grupo 2"], montoMin: 1000, montoMax: 3500, plazoMax: 30, factorMax: 0.55 },
-  { segmentos: ["NORMAL"], edadMin: 0, edadMax: 10, grupos: ["Grupo 1"], montoMin: 1000, montoMax: 4000, plazoMax: 30, factorMax: 0.60 },
-  { segmentos: ["NORMAL"], edadMin: 0, edadMax: 10, grupos: ["Grupo 2"], montoMin: 1000, montoMax: 3500, plazoMax: 30, factorMax: 0.55 },
-  { segmentos: ["NORMAL"], edadMin: 11, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 2500, plazoMax: 24, factorMax: 0.50 },
-  { segmentos: ["INCLUSION"], edadMin: 0, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 2000, plazoMax: 24, factorMax: 0.50 },
-  { segmentos: ["EVALUACION"], edadMin: 0, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 1500, plazoMax: 24, factorMax: 0.50 },
-  { segmentos: ["NA"], edadMin: 0, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 500, montoMax: 500, plazoMax: 6, factorMax: 0.50 },
+  { segmentos: ["VIP", "PREFERENTE"], edadMin: 0, edadMax: 13, grupos: ["Grupo 1"], montoMin: 1000, montoMax: 5500, plazoMin: 12, plazoMax: 30, factorMax: 0.80 },
+  { segmentos: ["VIP", "PREFERENTE"], edadMin: 0, edadMax: 13, grupos: ["Grupo 2"], montoMin: 1000, montoMax: 5000, plazoMin: 12, plazoMax: 30, factorMax: 0.75 },
+  { segmentos: ["VIP", "PREFERENTE"], edadMin: 14, edadMax: 20, grupos: ["Grupo 1"], montoMin: 1000, montoMax: 4500, plazoMin: 12, plazoMax: 30, factorMax: 0.65 },
+  { segmentos: ["VIP", "PREFERENTE"], edadMin: 14, edadMax: 20, grupos: ["Grupo 2"], montoMin: 1000, montoMax: 3500, plazoMin: 12, plazoMax: 30, factorMax: 0.55 },
+  { segmentos: ["NORMAL"], edadMin: 0, edadMax: 10, grupos: ["Grupo 1"], montoMin: 1000, montoMax: 4000, plazoMin: 12, plazoMax: 30, factorMax: 0.60 },
+  { segmentos: ["NORMAL"], edadMin: 0, edadMax: 10, grupos: ["Grupo 2"], montoMin: 1000, montoMax: 3500, plazoMin: 12, plazoMax: 30, factorMax: 0.55 },
+  { segmentos: ["NORMAL"], edadMin: 11, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 2500, plazoMin: 12, plazoMax: 24, factorMax: 0.50 },
+  { segmentos: ["INCLUSION"], edadMin: 0, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 2000, plazoMin: 12, plazoMax: 24, factorMax: 0.50 },
+  { segmentos: ["EVALUACION"], edadMin: 0, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 1500, plazoMin: 12, plazoMax: 24, factorMax: 0.50 },
+  { segmentos: ["NA"], edadMin: 0, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 500, montoMax: 500, plazoMin: 6, plazoMax: 6, factorMax: 0.50 },
 ];
 
-const APP_VERSION = "2026.07.31.v4";
+const APP_VERSION = "2026.07.31.v5";
 
 const DNI_WEIGHTS = [3, 2, 7, 6, 5, 4, 3, 2];
 const DNI_NUMBER_MAP = "67890123456";
@@ -563,6 +563,7 @@ export default function App() {
       const offer = {
         montoMin: rule.montoMin,
         montoMax: rule.montoMax,
+        plazoMin: rule.plazoMin,
         plazoMax: rule.plazoMax,
         factorMax,
         factorMaxLabel: `${Math.round(factorMax * 100)}%`,
@@ -574,7 +575,7 @@ export default function App() {
       setMontoSolicitado(
         Math.min(Math.max(montoSolicitado, rule.montoMin), rule.montoMax)
       );
-      setPlazo(Math.min(Math.max(plazo, 1), rule.plazoMax));
+      setPlazo(Math.min(Math.max(plazo, rule.plazoMin), rule.plazoMax));
       setFactorRecaudo(Math.round(factorMax * 100));
       showMessage("success", "Oferta consultada correctamente.");
     } catch (error) {
@@ -603,24 +604,13 @@ export default function App() {
       return;
     }
 
-    if (plazo < 1 || plazo > ofertaConsultada.plazoMax) {
-      showMessage(
-        "error",
-        `El plazo debe estar entre 1 y ${ofertaConsultada.plazoMax} meses.`
-      );
-      return;
-    }
-
-    const factorMaxPct = Math.round(ofertaConsultada.factorMax * 100);
-
     if (
-      !Number.isFinite(factorRecaudo) ||
-      factorRecaudo < 0 ||
-      factorRecaudo > factorMaxPct
+      plazo < ofertaConsultada.plazoMin ||
+      plazo > ofertaConsultada.plazoMax
     ) {
       showMessage(
         "error",
-        `El factor de recaudo debe estar entre 0% y ${factorMaxPct}%.`
+        `El plazo debe estar entre ${ofertaConsultada.plazoMin} y ${ofertaConsultada.plazoMax} meses.`
       );
       return;
     }
@@ -641,7 +631,7 @@ export default function App() {
     const tasaMensual = monthlyRateFromTEA(tea);
     const cuota = pmt(tasaMensual, plazo, totalFinanciado);
     const factorCalculado = factorFromCuota(segmento, cuota);
-    const factorSeleccionado = factorRecaudo / 100;
+    const factorSeleccionado = ofertaConsultada.factorMax;
     const factorExcedido =
       typeof factorCalculado === "string" ||
       (typeof factorCalculado === "number" &&
@@ -680,7 +670,7 @@ export default function App() {
       seguroObligatorio: seguroObliga,
       seguroVoluntario: seguroVol,
       cuota,
-      factorRecaudoSeleccionado: `${factorRecaudo.toFixed(0)}%`,
+      factorRecaudoSeleccionado: ofertaConsultada.factorMaxLabel,
       factorCalculado: formatFactor(factorCalculado),
       resultadoOferta: factorExcedido ? "OBSERVADO" : "CONFORME",
       deviceId: getDeviceId(),
@@ -884,36 +874,12 @@ export default function App() {
               Plazo
               <input
                 type="number"
-                min={1}
+                min={ofertaConsultada.plazoMin}
                 max={ofertaConsultada.plazoMax}
                 value={plazo}
                 onChange={(e) => setPlazo(Number(e.target.value))}
                 style={inputStyle}
               />
-            </label>
-
-            <label style={labelStyle}>
-              Factor de recaudo (%)
-              <input
-                type="number"
-                min={0}
-                max={Math.round(ofertaConsultada.factorMax * 100)}
-                step={5}
-                value={factorRecaudo}
-                onChange={(e) => setFactorRecaudo(Number(e.target.value))}
-                onBlur={() =>
-                  setFactorRecaudo(
-                    Math.min(
-                      Math.max(Number(factorRecaudo) || 0, 0),
-                      Math.round(ofertaConsultada.factorMax * 100)
-                    )
-                  )
-                }
-                style={inputStyle}
-              />
-              <div style={{ fontSize: 12, color: "#555", marginTop: 4 }}>
-                Máximo permitido: {ofertaConsultada.factorMaxLabel}
-              </div>
             </label>
 
             <label style={labelStyle}>
@@ -943,18 +909,7 @@ export default function App() {
             </label>
           </div>
 
-          {resultado && (
-            <>
-              <div style={{ ...resultRow, marginTop: 12 }}>
-                <span>Factor de recaudo seleccionado</span>
-                <strong>{factorRecaudo.toFixed(0)}%</strong>
-              </div>
-              <div style={resultRow}>
-                <span>Factor requerido por la cuota</span>
-                <strong>{formatFactor(resultado.factor)}</strong>
-              </div>
-            </>
-          )}
+          
 
           <button
             type="button"
@@ -982,6 +937,10 @@ export default function App() {
             <span>Cuota</span>
             <strong>{formatPEN(resultado.cuota)}</strong>
           </div>
+          <div style={resultRow}>
+            <span>Factor</span>
+            <strong>{formatFactor(resultado.factor)}</strong>
+          </div>
 
           {resultado.factorExcedido && (
             <div
@@ -994,14 +953,13 @@ export default function App() {
                 fontWeight: 700,
               }}
             >
-              Alerta: el factor requerido por la cuota supera el factor de
-              recaudo seleccionado de {factorRecaudo.toFixed(0)}%.
+              Alerta: el factor requerido por la cuota supera el límite permitido de {ofertaConsultada.factorMaxLabel}.
             </div>
           )}
         </section>
       )}
 
-      {mensaje && (
+      {mensaje && mensaje.type !== "success" && (
         <div
           style={{
             marginTop: 16,
@@ -1010,21 +968,15 @@ export default function App() {
             border:
               mensaje.type === "error"
                 ? "1px solid #c62828"
-                : mensaje.type === "warning"
-                ? "1px solid #ef6c00"
-                : "1px solid #2e7d32",
+                : "1px solid #ef6c00",
             color:
               mensaje.type === "error"
                 ? "#c62828"
-                : mensaje.type === "warning"
-                ? "#ef6c00"
-                : "#2e7d32",
+                : "#ef6c00",
             background:
               mensaje.type === "error"
                 ? "#fff5f5"
-                : mensaje.type === "warning"
-                ? "#fff8e1"
-                : "#f3fbf4",
+                : "#fff8e1",
             fontWeight: 600,
           }}
         >
