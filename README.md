@@ -51,3 +51,14 @@
 - Factores máximos actualizados según segmento, antigüedad y grupo.
 - “Vida Integral” cambia a “Vida Integral/Desgravamen”.
 - Mensaje exitoso simplificado.
+
+
+## Cambios v6
+- Se oculta el campo editable de factor de recaudo.
+- Se oculta el resumen intermedio del factor en la sección de simulación.
+- El factor calculado se muestra solo en el resultado final.
+- Se oculta el mensaje visual de éxito.
+- Control de plazo por producto:
+  - VIP, PREFERENTE, NORMAL, INCLUSION y EVALUACION: plazo mínimo 12 meses.
+  - NA: plazo mínimo y máximo de 6 meses.
+- Las tablas de cálculo de factor se actualizaron con el Excel V.3 adjunto.
