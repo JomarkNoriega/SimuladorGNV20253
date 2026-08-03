@@ -344,7 +344,7 @@ const OFFER_RULES = [
   { segmentos: ["NA"], edadMin: 0, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 500, montoMax: 500, plazoMin: 6, plazoMax: 6, factorMax: 0.50 },
 ];
 
-const APP_VERSION = "2026.07.31.v5";
+const APP_VERSION = "2026.07.31.v6";
 
 const DNI_WEIGHTS = [3, 2, 7, 6, 5, 4, 3, 2];
 const DNI_NUMBER_MAP = "67890123456";
@@ -447,7 +447,6 @@ export default function App() {
   const currentYear = new Date().getFullYear();
 
   const [dniUsuario, setDniUsuario] = useState("");
-  const [digitoChequeo, setDigitoChequeo] = useState("");
   const [dniCliente, setDniCliente] = useState("");
   const [segmento, setSegmento] = useState("VIP");
   const [marcaVehiculo, setMarcaVehiculo] = useState("TOYOTA");
@@ -505,13 +504,7 @@ export default function App() {
     if (!/^\d{8}$/.test(dniUsuario)) {
       return "El DNI del usuario debe contener exactamente 8 dígitos numéricos.";
     }
-    if (!/^\d$/.test(digitoChequeo)) {
-      return "El dígito de chequeo debe ser un único dígito numérico.";
-    }
-    if (!isValidPeruvianDniCheckDigit(dniUsuario, digitoChequeo)) {
-      return "El dígito de chequeo no corresponde al DNI del usuario.";
-    }
-    if (!/^\d{8}$/.test(dniCliente)) {
+if (!/^\d{8}$/.test(dniCliente)) {
       return "El DNI del cliente debe contener exactamente 8 dígitos numéricos.";
     }
     if (!VEHICLE_BRAND_GROUP[marcaVehiculo]) {
@@ -540,10 +533,9 @@ export default function App() {
     setConsultando(true);
 
     try {
-      // La validación definitiva del DNI + dígito se realiza en el backend.
+      // Validación temporal: formato y pertenencia a la lista autorizada.
       await postJson("/api/validar-usuario", {
         dni: dniUsuario,
-        digitoChequeo,
       });
 
       const antiguedad = currentYear - anioModelo;
@@ -654,7 +646,6 @@ export default function App() {
 
     const payload = {
       dniUsuario,
-      digitoChequeo,
       dniCliente,
       segmentoCliente: segmento,
       marcaVehiculo,
@@ -721,21 +712,6 @@ export default function App() {
               onChange={(e) => setDniUsuario(onlyDigits(e.target.value))}
               style={inputStyle}
               placeholder="8 dígitos"
-            />
-          </label>
-
-          <label style={labelStyle}>
-            Dígito de chequeo
-            <input
-              value={digitoChequeo}
-              maxLength={1}
-              onChange={(e) =>
-                setDigitoChequeo(
-                  e.target.value.replace(/\D/g, "")
-                )
-              }
-              style={inputStyle}
-              placeholder="1 dígito"
             />
           </label>
 
