@@ -62,3 +62,11 @@
   - VIP, PREFERENTE, NORMAL, INCLUSION y EVALUACION: plazo mínimo 12 meses.
   - NA: plazo mínimo y máximo de 6 meses.
 - Las tablas de cálculo de factor se actualizaron con el Excel V.3 adjunto.
+
+
+## Cambio temporal v7
+- Se retiró de la pantalla el campo “Dígito de chequeo”.
+- Se desactivó la validación del dígito de chequeo en frontend y backend.
+- Se mantiene la validación del DNI de usuario:
+  - exactamente 8 dígitos numéricos;
+  - existencia en `AUTHORIZED_DNIS_JSON`.
