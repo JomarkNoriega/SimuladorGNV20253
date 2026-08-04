@@ -332,28 +332,28 @@ function vehicleSegmentFromRules(segmentoCliente, marca, antiguedad) {
 
 
 const OFFER_RULES = [
-  { segmentos: ["VIP", "PREFERENTE"], edadMin: 0, edadMax: 13, grupos: ["Grupo 1"], montoMin: 1000, montoMax: 5500, plazoMin: 12, plazoMax: 30, factorMax: 0.80 },
-  { segmentos: ["VIP", "PREFERENTE"], edadMin: 0, edadMax: 13, grupos: ["Grupo 2"], montoMin: 1000, montoMax: 5000, plazoMin: 12, plazoMax: 30, factorMax: 0.75 },
-  { segmentos: ["VIP", "PREFERENTE"], edadMin: 14, edadMax: 20, grupos: ["Grupo 1"], montoMin: 1000, montoMax: 4500, plazoMin: 12, plazoMax: 30, factorMax: 0.65 },
-  { segmentos: ["VIP", "PREFERENTE"], edadMin: 14, edadMax: 20, grupos: ["Grupo 2"], montoMin: 1000, montoMax: 3500, plazoMin: 12, plazoMax: 30, factorMax: 0.55 },
-  { segmentos: ["VIP", "PREFERENTE"], edadMin: 21, edadMax: 25, grupos: ["Grupo 1", "Grupo 2"], montoMin: 1000, montoMax: 1000, plazoMin: 12, plazoMax: 30, factorMax: 0.50 },
+  { segmentos: ["VIP", "PREFERENTE"], edadMin: 0, edadMax: 13, grupos: ["Grupo 1"], montoMin: 1000, montoMax: 5500, plazoMin: 12, plazoMax: 30, factorOferta: 0.65, factorMaximo: 0.85 },
+  { segmentos: ["VIP", "PREFERENTE"], edadMin: 0, edadMax: 13, grupos: ["Grupo 2"], montoMin: 1000, montoMax: 5000, plazoMin: 12, plazoMax: 30, factorOferta: 0.60, factorMaximo: 0.85 },
+  { segmentos: ["VIP", "PREFERENTE"], edadMin: 14, edadMax: 20, grupos: ["Grupo 1"], montoMin: 1000, montoMax: 4500, plazoMin: 12, plazoMax: 30, factorOferta: 0.55, factorMaximo: 0.85 },
+  { segmentos: ["VIP", "PREFERENTE"], edadMin: 14, edadMax: 20, grupos: ["Grupo 2"], montoMin: 1000, montoMax: 3500, plazoMin: 12, plazoMax: 30, factorOferta: 0.50, factorMaximo: 0.85 },
+  { segmentos: ["VIP", "PREFERENTE"], edadMin: 21, edadMax: 25, grupos: ["Grupo 1", "Grupo 2"], montoMin: 1000, montoMax: 1000, plazoMin: 12, plazoMax: 30, factorOferta: 0.50, factorMaximo: 0.85 },
 
-  { segmentos: ["NORMAL"], edadMin: 0, edadMax: 10, grupos: ["Grupo 1"], montoMin: 1000, montoMax: 4000, plazoMin: 12, plazoMax: 30, factorMax: 0.60 },
-  { segmentos: ["NORMAL"], edadMin: 0, edadMax: 10, grupos: ["Grupo 2"], montoMin: 1000, montoMax: 3500, plazoMin: 12, plazoMax: 30, factorMax: 0.55 },
-  { segmentos: ["NORMAL"], edadMin: 11, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 2500, plazoMin: 12, plazoMax: 24, factorMax: 0.50 },
-  { segmentos: ["NORMAL"], edadMin: 21, edadMax: 25, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 1000, plazoMin: 12, plazoMax: 24, factorMax: 0.50 },
+  { segmentos: ["NORMAL"], edadMin: 0, edadMax: 10, grupos: ["Grupo 1"], montoMin: 1000, montoMax: 4000, plazoMin: 12, plazoMax: 30, factorOferta: 0.50, factorMaximo: 0.85 },
+  { segmentos: ["NORMAL"], edadMin: 0, edadMax: 10, grupos: ["Grupo 2"], montoMin: 1000, montoMax: 3500, plazoMin: 12, plazoMax: 30, factorOferta: 0.50, factorMaximo: 0.85 },
+  { segmentos: ["NORMAL"], edadMin: 11, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 2500, plazoMin: 12, plazoMax: 24, factorOferta: 0.50, factorMaximo: 0.85 },
+  { segmentos: ["NORMAL"], edadMin: 21, edadMax: 25, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 1000, plazoMin: 12, plazoMax: 24, factorOferta: 0.50, factorMaximo: 0.85 },
 
-  { segmentos: ["INCLUSION"], edadMin: 0, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 2000, plazoMin: 12, plazoMax: 24, factorMax: 0.60 },
-  { segmentos: ["INCLUSION"], edadMin: 21, edadMax: 25, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 1000, plazoMin: 12, plazoMax: 24, factorMax: 0.60 },
+  { segmentos: ["INCLUSION"], edadMin: 0, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 2000, plazoMin: 12, plazoMax: 24, factorOferta: 0.60, factorMaximo: 0.85 },
+  { segmentos: ["INCLUSION"], edadMin: 21, edadMax: 25, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 1000, plazoMin: 12, plazoMax: 24, factorOferta: 0.60, factorMaximo: 0.85 },
 
-  { segmentos: ["EVALUACION"], edadMin: 0, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 1500, plazoMin: 12, plazoMax: 24, factorMax: 0.60 },
-  { segmentos: ["EVALUACION"], edadMin: 21, edadMax: 25, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 1000, plazoMin: 12, plazoMax: 24, factorMax: 0.60 },
+  { segmentos: ["EVALUACION"], edadMin: 0, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 1500, plazoMin: 12, plazoMax: 24, factorOferta: 0.60, factorMaximo: 0.85 },
+  { segmentos: ["EVALUACION"], edadMin: 21, edadMax: 25, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 1000, plazoMin: 12, plazoMax: 24, factorOferta: 0.60, factorMaximo: 0.85 },
 
-  { segmentos: ["NA"], edadMin: 0, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 500, montoMax: 500, plazoMin: 6, plazoMax: 6, factorMax: 0.50 },
-  { segmentos: ["NA"], edadMin: 21, edadMax: 25, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 500, montoMax: 500, plazoMin: 6, plazoMax: 6, factorMax: 0.50 },
+  { segmentos: ["NA"], edadMin: 0, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 500, montoMax: 500, plazoMin: 6, plazoMax: 6, factorOferta: 0.50, factorMaximo: 0.50 },
+  { segmentos: ["NA"], edadMin: 21, edadMax: 25, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 500, montoMax: 500, plazoMin: 6, plazoMax: 6, factorOferta: 0.50, factorMaximo: 0.50 },
 ];
 
-const APP_VERSION = "2026.08.04.v1";
+const APP_VERSION = "2026.08.04.v2";
 
 const DNI_WEIGHTS = [3, 2, 7, 6, 5, 4, 3, 2];
 const DNI_NUMBER_MAP = "67890123456";
@@ -559,15 +559,18 @@ if (!/^\d{8}$/.test(dniCliente)) {
         return;
       }
 
-      const factorMax = rule.factorMax;
+      const factorOferta = rule.factorOferta;
+      const factorMaximo = rule.factorMaximo;
 
       const offer = {
         montoMin: rule.montoMin,
         montoMax: rule.montoMax,
         plazoMin: rule.plazoMin,
         plazoMax: rule.plazoMax,
-        factorMax,
-        factorMaxLabel: `${Math.round(factorMax * 100)}%`,
+        factorOferta,
+        factorOfertaLabel: `${Math.round(factorOferta * 100)}%`,
+        factorMaximo,
+        factorMaximoLabel: `${Math.round(factorMaximo * 100)}%`,
         antiguedad,
         grupoMarca,
       };
@@ -577,7 +580,7 @@ if (!/^\d{8}$/.test(dniCliente)) {
         Math.min(Math.max(montoSolicitado, rule.montoMin), rule.montoMax)
       );
       setPlazo(Math.min(Math.max(plazo, rule.plazoMin), rule.plazoMax));
-      setFactorRecaudo(Math.round(factorMax * 100));
+      setFactorRecaudo(Math.round(factorOferta * 100));
       showMessage("success", "Oferta consultada correctamente.");
     } catch (error) {
       showMessage("error", error.message);
@@ -632,7 +635,7 @@ if (!/^\d{8}$/.test(dniCliente)) {
     const tasaMensual = monthlyRateFromTEA(tea);
     const cuota = pmt(tasaMensual, plazo, totalFinanciado);
     const factorCalculado = factorFromCuota(segmento, cuota);
-    const factorSeleccionado = ofertaConsultada.factorMax;
+    const factorSeleccionado = ofertaConsultada.factorMaximo;
     const factorExcedido =
       typeof factorCalculado === "string" ||
       (typeof factorCalculado === "number" &&
@@ -664,13 +667,13 @@ if (!/^\d{8}$/.test(dniCliente)) {
       placa,
       montoMaximo: ofertaConsultada.montoMax,
       plazoMaximo: ofertaConsultada.plazoMax,
-      factorMaximo: ofertaConsultada.factorMaxLabel,
+      factorMaximo: ofertaConsultada.factorMaximoLabel,
       montoSolicitado,
       plazo,
       seguroObligatorio: seguroObliga,
       seguroVoluntario: seguroVol,
       cuota,
-      factorRecaudoSeleccionado: ofertaConsultada.factorMaxLabel,
+      factorRecaudoSeleccionado: ofertaConsultada.factorOfertaLabel,
       factorCalculado: formatFactor(factorCalculado),
       resultadoOferta: factorExcedido ? "OBSERVADO" : "CONFORME",
       deviceId: getDeviceId(),
@@ -825,8 +828,8 @@ if (!/^\d{8}$/.test(dniCliente)) {
             <strong>{ofertaConsultada.plazoMax} meses</strong>
           </div>
           <div style={resultRow}>
-            <span>Factor máximo de recaudo</span>
-            <strong>{ofertaConsultada.factorMaxLabel}</strong>
+            <span>Factor de oferta</span>
+            <strong>{ofertaConsultada.factorOfertaLabel}</strong>
           </div>
         </section>
       )}
