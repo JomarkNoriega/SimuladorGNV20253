@@ -79,3 +79,9 @@
 
 ## Cambios v9
 - Se actualizó el cuadro de máximos para INCLUSIÓN y EVALUACIÓN a 60% de factor de recaudo máximo.
+
+## Cambios v10
+- La oferta preaprobada muestra “Factor de oferta”, tomado de la columna Factor Recaudo Campaña.
+- La alerta se valida contra el Factor Recaudo Máximo interno.
+- El valor máximo no se muestra al usuario.
+- Para el rango de 21 a 25 años se mantiene Factor de oferta 50% (60% en Inclusión/Evaluación) y máximo interno 85%; NA conserva 50%/50%.
