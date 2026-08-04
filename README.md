@@ -76,3 +76,6 @@
 - VIP, PREFERENTE, NORMAL, INCLUSION y EVALUACION: oferta exacta de S/ 1,000.
 - NA: oferta exacta de S/ 500.
 - Antigüedad máxima permitida: 25 años.
+
+## Cambios v9
+- Se actualizó el cuadro de máximos para INCLUSIÓN y EVALUACIÓN a 60% de factor de recaudo máximo.
