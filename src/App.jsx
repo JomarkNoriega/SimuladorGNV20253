@@ -343,10 +343,10 @@ const OFFER_RULES = [
   { segmentos: ["NORMAL"], edadMin: 11, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 2500, plazoMin: 12, plazoMax: 24, factorMax: 0.50 },
   { segmentos: ["NORMAL"], edadMin: 21, edadMax: 25, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 1000, plazoMin: 12, plazoMax: 24, factorMax: 0.50 },
 
-  { segmentos: ["INCLUSION"], edadMin: 0, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 2000, plazoMin: 12, plazoMax: 24, factorMax: 0.50 },
+  { segmentos: ["INCLUSION"], edadMin: 0, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 2000, plazoMin: 12, plazoMax: 24, factorMax: 0.60 },
   { segmentos: ["INCLUSION"], edadMin: 21, edadMax: 25, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 1000, plazoMin: 12, plazoMax: 24, factorMax: 0.50 },
 
-  { segmentos: ["EVALUACION"], edadMin: 0, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 1500, plazoMin: 12, plazoMax: 24, factorMax: 0.50 },
+  { segmentos: ["EVALUACION"], edadMin: 0, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 1500, plazoMin: 12, plazoMax: 24, factorMax: 0.60 },
   { segmentos: ["EVALUACION"], edadMin: 21, edadMax: 25, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 1000, plazoMin: 12, plazoMax: 24, factorMax: 0.50 },
 
   { segmentos: ["NA"], edadMin: 0, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 500, montoMax: 500, plazoMin: 6, plazoMax: 6, factorMax: 0.50 },
