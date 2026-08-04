@@ -344,16 +344,16 @@ const OFFER_RULES = [
   { segmentos: ["NORMAL"], edadMin: 21, edadMax: 25, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 1000, plazoMin: 12, plazoMax: 24, factorMax: 0.50 },
 
   { segmentos: ["INCLUSION"], edadMin: 0, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 2000, plazoMin: 12, plazoMax: 24, factorMax: 0.60 },
-  { segmentos: ["INCLUSION"], edadMin: 21, edadMax: 25, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 1000, plazoMin: 12, plazoMax: 24, factorMax: 0.50 },
+  { segmentos: ["INCLUSION"], edadMin: 21, edadMax: 25, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 1000, plazoMin: 12, plazoMax: 24, factorMax: 0.60 },
 
   { segmentos: ["EVALUACION"], edadMin: 0, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 1500, plazoMin: 12, plazoMax: 24, factorMax: 0.60 },
-  { segmentos: ["EVALUACION"], edadMin: 21, edadMax: 25, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 1000, plazoMin: 12, plazoMax: 24, factorMax: 0.50 },
+  { segmentos: ["EVALUACION"], edadMin: 21, edadMax: 25, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 1000, montoMax: 1000, plazoMin: 12, plazoMax: 24, factorMax: 0.60 },
 
   { segmentos: ["NA"], edadMin: 0, edadMax: 20, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 500, montoMax: 500, plazoMin: 6, plazoMax: 6, factorMax: 0.50 },
   { segmentos: ["NA"], edadMin: 21, edadMax: 25, grupos: ["Grupo 1", "Grupo 2", "TODOS"], montoMin: 500, montoMax: 500, plazoMin: 6, plazoMax: 6, factorMax: 0.50 },
 ];
 
-const APP_VERSION = "2026.08.03.v1";
+const APP_VERSION = "2026.08.04.v1";
 
 const DNI_WEIGHTS = [3, 2, 7, 6, 5, 4, 3, 2];
 const DNI_NUMBER_MAP = "67890123456";
@@ -938,7 +938,7 @@ if (!/^\d{8}$/.test(dniCliente)) {
                 fontWeight: 700,
               }}
             >
-              Alerta: el factor requerido por la cuota supera el límite. DEBE VOLVER A GENERAR LA SIMULACIÓN.
+              Alerta: el factor requerido por la cuota supera el límite permitido. DEBE VOLVER A GENERAR LA SIMULACIÓN.
             </div>
           )}
         </section>
